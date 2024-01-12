@@ -1,5 +1,4 @@
 import tkinter as tk
-from tkinter import ttk, messagebox
 import random
 import json
 import difflib
@@ -30,44 +29,36 @@ class QuizApp:
         self.set_window_size()
         self.set_color_scheme()
 
-        self.instruction_label = tk.Label(self.master, text="Choose the correct option", font=("Arial", 14, "bold"), bg=self.background_color, fg=self.headline_color)
-        self.instruction_label.pack(pady=10)
+        self.instruction_label = tk.Label(self.master, text="Choose the correct option", font=("Arial", 12, "bold"), bg=self.background_color, fg=self.headline_color)
+        self.instruction_label.pack(pady=5)
 
-        self.remaining_label = tk.Label(self.master, text="", font=("Arial", 12), bg=self.background_color, fg=self.paragraph_color)
+        self.remaining_label = tk.Label(self.master, text="", font=("Arial", 10), bg=self.background_color, fg=self.paragraph_color)
         self.remaining_label.pack()
 
-        # Use a Text widget for displaying questions and answers
-        self.text_widget = tk.Text(self.master, wrap="word", width=60, height=10, font=("Arial", 14))
-        self.text_widget.pack(pady=10, padx=10)
+        self.question_label = tk.Label(self.master, text="", font=("Arial", 12), wraplength=380, justify='left', bg=self.background_color, fg=self.paragraph_color)
+        self.question_label.pack(pady=5, padx=5)
 
         self.choice_buttons = []
         for i in range(4):
-            button = tk.Button(self.master, text="", width=40, height=2, command=lambda i=i: self.check_answer(i), bg=self.button_bg_color, fg=self.button_text_color)
-            button.pack(pady=5)
+            button = tk.Button(self.master, text="", width=30, height=1, command=lambda i=i: self.check_answer(i), bg=self.button_bg_color, fg=self.button_text_color)
+            button.pack(pady=3)
             self.choice_buttons.append(button)
 
-        self.next_question_button = tk.Button(self.master, text="Next Question", width=20, height=2, command=self.next_question, bg=self.button_bg_color, fg=self.button_text_color)
-        self.next_question_button.pack(pady=20)
+        self.next_question_button = tk.Button(self.master, text="Next Question", width=15, height=1, command=self.next_question, bg=self.button_bg_color, fg=self.button_text_color)
+        self.next_question_button.pack(pady=10)
 
-        self.add_question_button = tk.Button(self.master, text="Add New Question", width=20, height=2, command=self.add_new_question, bg=self.button_bg_color, fg=self.button_text_color)
-        self.add_question_button.pack(pady=10)
+        self.add_question_button = tk.Button(self.master, text="Add New Question", width=15, height=1, command=self.add_new_question, bg=self.button_bg_color, fg=self.button_text_color)
+        self.add_question_button.pack(pady=5)
 
-        self.message_label = tk.Label(self.master, text="", font=("Arial", 12), bg=self.background_color, fg=self.headline_color)
-        self.message_label.pack(pady=10)
+        self.scrollable_results_text = tk.Text(self.master, wrap="word", width=50, height=10, font=("Arial", 10), bg=self.background_color, fg=self.paragraph_color)
+        self.scrollable_results_text.pack(pady=10, padx=5)
 
-        # Add Scrollbar
-        scrollbar = ttk.Scrollbar(self.master, command=self.text_widget.yview)
+        scrollbar = tk.Scrollbar(self.master, command=self.scrollable_results_text.yview)
         scrollbar.pack(side="right", fill="y")
-
-        # Configure Text widget to use Scrollbar
-        self.text_widget.config(yscrollcommand=scrollbar.set)
+        self.scrollable_results_text.config(yscrollcommand=scrollbar.set)
 
     def set_window_size(self):
-        screen_width = self.master.winfo_screenwidth()
-        screen_height = self.master.winfo_screenheight()
-        window_width = int(screen_width / 2)
-        window_height = int(window_width * 16 / 9)
-        self.master.geometry(f"{window_width}x{window_height}+{int((screen_width - window_width) / 2)}+{int((screen_height - window_height) / 2)}")
+        self.master.geometry("400x500+300+300")
 
     def set_color_scheme(self):
         self.background_color = "#004643"
@@ -101,21 +92,12 @@ class QuizApp:
         return variations
 
     def quiz_mode(self):
-        if self.current_question_index >= len(self.question_list):
+        if self.current_question_index >= len(self.questions_dict):
             self.show_final_results()
             return
 
-        question = self.question_list[self.current_question_index]
-        remaining_questions = set(self.questions_dict.keys()) - self.asked_questions
-        if not remaining_questions:
-            self.show_final_results()
-            return
-
-        self.remaining_questions = len(remaining_questions)
-        self.remaining_label.config(text=f"Remaining questions: {self.remaining_questions}")
-
-        question_text = question.text
-        correct_answer = question.correct_answer
+        question_text = list(self.questions_dict.keys())[self.current_question_index]
+        correct_answer = self.questions_dict[question_text]
 
         existing_answers = list(self.questions_dict.values())
         answer_variations = self.generate_variations(existing_answers, correct_answer)
@@ -123,18 +105,21 @@ class QuizApp:
         choices = [correct_answer] + random.sample(answer_variations, min(3, len(answer_variations)))
         random.shuffle(choices)
 
-        self.text_widget.delete(1.0, tk.END)  # Clear previous text
-        self.text_widget.insert(tk.END, f"{question_text}\n\n")
+        self.question_list.append(Question(question_text, correct_answer))
 
-        for i, choice in enumerate(choices):
-            self.text_widget.insert(tk.END, f"{i + 1}. {choice}\n")
+        self.question_label.config(text=f"{question_text}\n")
 
         for i, button in enumerate(self.choice_buttons):
-            button.config(text=choices[i])
+            button.config(text=str(choices[i]))
 
     def check_answer(self, choice_index):
+        if self.current_question_index >= len(self.question_list):
+            return
+
         chosen_answer = self.choice_buttons[choice_index].cget("text")
         correct_answer = self.question_list[self.current_question_index].correct_answer
+
+        self.question_list[self.current_question_index].user_choice = chosen_answer
 
         if chosen_answer == correct_answer:
             self.score += 1
@@ -159,7 +144,7 @@ class QuizApp:
             result_message += f"  - Correct Answer: {question.correct_answer}\n"
             result_message += f"  - Your Choice: {question.user_choice}\n"
 
-        self.message_label.config(text=result_message)
+        self.scrollable_results_text.insert(tk.END, result_message)
 
     def add_new_question(self):
         new_question_window = tk.Toplevel(self.master)
