@@ -12,8 +12,7 @@ A small python program designed to help you revise and memorise two pieces of lo
 3. Run the exe file.
 
 ## Option B: Build your own
-Make sure you have [Python](https://www.python.org/) installed in your machine.
-You will also need Tkinder installed
+Make sure you have [Python](https://www.python.org/) installed in your machine. You will also need Tkinder installed
 ```
 pip install tk
 ```
