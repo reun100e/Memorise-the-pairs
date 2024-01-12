@@ -12,7 +12,12 @@ A small python program designed to help you revise and memorise two pieces of lo
 3. Run the exe file.
 
 ## Option B: Build your own
-Make sure you have python installed in your machine
+Make sure you have [Python](https://www.python.org/) installed in your machine.
+You will also need Tkinder installed
+```
+pip install tk
+```
+Then,
 ### 1. Download or clone the repo
 ```
 git clone https://github.com/reun100e/Memorise-the-pairs.git
