@@ -22,6 +22,11 @@ class QuizApp:
         self.question_list = []
         self.current_question_index = 0
 
+        self.randomize_questions()
+
+    def randomize_questions(self):
+        self.question_order = list(self.questions_dict.keys())
+        random.shuffle(self.question_order)
         self.next_question()
 
     def setup_ui(self):
@@ -46,6 +51,9 @@ class QuizApp:
 
         self.next_question_button = tk.Button(self.master, text="Next Question", width=15, height=1, command=self.next_question, bg=self.button_bg_color, fg=self.button_text_color)
         self.next_question_button.pack(pady=10)
+
+        self.restart_button = tk.Button(self.master, text="Restart Quiz", width=15, height=1, command=self.restart, bg=self.button_bg_color, fg=self.button_text_color)
+        self.restart_button.pack(pady=10)
 
         self.add_question_button = tk.Button(self.master, text="Add New Question", width=15, height=1, command=self.add_new_question, bg=self.button_bg_color, fg=self.button_text_color)
         self.add_question_button.pack(pady=5)
@@ -94,11 +102,11 @@ class QuizApp:
         return variations
 
     def quiz_mode(self):
-        if self.current_question_index >= len(self.questions_dict):
+        if self.current_question_index >= len(self.question_order):
             self.show_final_results()
             return
 
-        question_text = list(self.questions_dict.keys())[self.current_question_index]
+        question_text = self.question_order[self.current_question_index]
         correct_answer = self.questions_dict[question_text]
 
         existing_answers = list(self.questions_dict.values())
@@ -166,10 +174,22 @@ class QuizApp:
         if new_question and new_answer:
             self.questions_dict[new_question] = new_answer
             self.save_questions()
-            self.message_label.config(text="New question added successfully!")
             new_question_window.destroy()
+            self.restart()
         else:
-            self.message_label.config(text="Error. Both question and answer must be provided.")
+            tk.messagebox.showerror("Error", "Both question and answer must be provided.")
+
+    def restart(self):
+        self.asked_questions.clear()
+        self.remaining_questions = len(self.questions_dict) - len(self.asked_questions)
+        self.score = 0
+        self.question_list = []
+        self.current_question_index = 0
+
+        self.scrollable_results_text.delete(1.0, tk.END)
+
+        self.randomize_questions()
+
 
 def main():
     root = tk.Tk()
