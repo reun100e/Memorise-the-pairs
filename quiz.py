@@ -31,7 +31,7 @@ class QuizApp:
         self.next_question()
 
     def setup_ui(self):
-        self.master.title("Memorise-the-pairs Quiz!")
+        self.master.title("Memorise-the-pairs Quiz! - by Dr. Aghosh")
         self.set_window_size()
         # self.master.iconbitmap("path_to_icon.ico")
         self.set_color_scheme()
@@ -42,7 +42,7 @@ class QuizApp:
         self.remaining_label = tk.Label(self.master, text="", font=("Arial", 12, "bold"), bg=self.background_color, fg=self.paragraph_color)
         self.remaining_label.pack()
 
-        self.question_label = tk.Label(self.master, text="", font=("Arial", 18, "bold"), wraplength=380, justify='left', bg=self.background_color, fg=self.paragraph_color)
+        self.question_label = tk.Label(self.master, text="", font=("Arial", 18, "bold"), wraplength=480, justify='left', bg=self.background_color, fg=self.paragraph_color)
         self.question_label.pack(pady=5, padx=5)
 
         self.choice_buttons = []
@@ -63,15 +63,17 @@ class QuizApp:
         self.scrollable_results_text.pack(pady=20, padx=5)
 
     def set_window_size(self):
-        # self.master.geometry("400x500+300+300")
         screen_width = self.master.winfo_screenwidth()
         screen_height = self.master.winfo_screenheight()
-        window_width = int(screen_width * 0.8)
-        window_height = int(screen_height * 0.8)
-        x_position = (screen_width - window_width) // 2
-        y_position = (screen_height - window_height) // 2
 
-        self.master.geometry(f"{window_width}x{window_height}+{x_position}+{y_position}")
+        # Calculate the width based on the desired height (9:16 aspect ratio)
+        desired_height = int(screen_height * 0.9)
+        desired_width = int(desired_height * 9 / 16)
+
+        x_position = (screen_width - desired_width) // 2
+        y_position = (screen_height - desired_height) // 2
+
+        self.master.geometry(f"{desired_width}x{desired_height}+{x_position}+{y_position}")
 
     def set_color_scheme(self):
         self.background_color = "#004643"
@@ -135,12 +137,18 @@ class QuizApp:
 
         self.question_list[self.current_question_index].user_choice = chosen_answer
 
-        feedback = f"Question {self.current_question_index + 1}: "
+        feedback = f"Question {self.current_question_index + 1}:\n"
+
         if chosen_answer == correct_answer:
-            feedback += "Correct!\n"
             self.score += 1
+            feedback += f"CORRECT!\n"
         else:
-            feedback += f"Wrong! Correct answer: {correct_answer}\n"
+            feedback += F"WRONG\n"
+
+        feedback += f"{self.question_order[self.current_question_index]}\n"
+        feedback += f"  - Your Answer: {chosen_answer}\n"
+        feedback += f"  - Correct Answer: {correct_answer}\n"
+        feedback += f"\n"
 
         current_content = self.scrollable_results_text.get(1.0, tk.END)
         new_content = feedback + current_content
@@ -162,11 +170,6 @@ class QuizApp:
     def show_final_results(self):
         result_message = f"Quiz Complete. Your final score: {self.score}\n\n"
         result_message += "Results for each question:\n"
-
-        for i, question in enumerate(self.question_list):
-            result_message += f"\nQuestion {i + 1}:\n"
-            result_message += f"  - Correct Answer: {question.correct_answer}\n"
-            result_message += f"  - Your Choice: {question.user_choice}\n"
 
         current_content = self.scrollable_results_text.get(1.0, tk.END)
         new_content = result_message + current_content
