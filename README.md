@@ -7,9 +7,12 @@ A small python program designed to help you revise and memorise two pieces of lo
 
 # How to use
 ## Option A: Download the latest release
-1. This is the easiest. Just download the latest version from the releases.
-2. Don't run the .exe file yet. Create a questions.json file first.
-3. Run the exe file.
+1. This is the easiest. Just download the latest version from the [releases](https://github.com/reun100e/Memorise-the-pairs/releases).
+2. Download the 'Memorise-the-pairs.exe + questions.json.zip' file
+3. Extract it
+4. Open 'questions.json' using any text editor
+5. Add your questions to the json file. Save it & close
+6. Run quiz.exe
 
 ## Option B: Build your own
 Make sure you have [Python](https://www.python.org/) installed in your machine. You will also need Tkinder installed
