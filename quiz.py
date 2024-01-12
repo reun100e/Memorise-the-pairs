@@ -50,22 +50,35 @@ class QuizApp:
             self.choice_buttons.append(button)
 
         self.next_question_button = tk.Button(self.master, text="Next Question", width=15, height=1, command=self.next_question, bg=self.button_bg_color, fg=self.button_text_color)
-        self.next_question_button.pack(pady=10)
+        self.next_question_button.pack(side="left", padx=5)
 
         self.restart_button = tk.Button(self.master, text="Restart Quiz", width=15, height=1, command=self.restart, bg=self.button_bg_color, fg=self.button_text_color)
-        self.restart_button.pack(pady=10)
+        self.restart_button.pack(side="left", padx=5)
 
         self.add_question_button = tk.Button(self.master, text="Add New Question", width=15, height=1, command=self.add_new_question, bg=self.button_bg_color, fg=self.button_text_color)
-        self.add_question_button.pack(pady=5)
+        self.add_question_button.pack(side="left", padx=5)
 
         self.scrollable_results_text = tk.Text(self.master, wrap="word", width=50, height=10, font=("Arial", 10), bd=0, highlightthickness=0,  bg=self.background_color, fg=self.paragraph_color)
         self.scrollable_results_text.tag_configure("center", justify='center')
 
-        self.scrollable_results_text.pack(pady=10, padx=5)
+        self.scrollable_results_text.pack(side="left", pady=20, padx=5)
 
-        scrollbar = tk.Scrollbar(self.master, command=self.scrollable_results_text.yview)
-        scrollbar.pack(side="right", fill="y")
-        self.scrollable_results_text.config(yscrollcommand=scrollbar.set)
+        # scrollbar = tk.Scrollbar(self.master, command=self.scrollable_results_text.yview)
+        # scrollbar.pack(side="right", fill="y")
+        # self.scrollable_results_text.config(yscrollcommand=scrollbar.set)
+
+        window_width = self.master.winfo_reqwidth()
+        window_height = self.master.winfo_reqheight()
+        text_width = self.scrollable_results_text.winfo_reqwidth()
+        text_height = self.scrollable_results_text.winfo_reqheight()
+        x_position = (window_width - text_width) + 170
+        y_position = window_height - text_height + 280
+
+        self.scrollable_results_text.place(x=x_position, y=y_position)
+
+        self.next_question_button.place(x=x_position+260, y=y_position-40)
+        self.restart_button.place(x=x_position+125, y=y_position-40)
+        self.add_question_button.place(x=x_position-10, y=y_position-40)
 
     def set_window_size(self):
         self.master.geometry("400x500+300+300")
