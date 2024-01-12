@@ -7,9 +7,9 @@ A small python program designed to help you revise and memorise two pieces of lo
 
 # How to use
 ## Option A: Download the latest release
-### 1. This is the easiest. Just download the latest version from the releases.
-### 2. Don't run teh .exe file yet. Create a document.json file first.
-### 3. Run the exe file.
+1. This is the easiest. Just download the latest version from the releases.
+2. Don't run teh .exe file yet. Create a document.json file first.
+3. Run the exe file.
 
 ## Option B: Build your own
 Make sure you have python installed in your machine
