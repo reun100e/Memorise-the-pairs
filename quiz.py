@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import tkinter as tk
 import random
 import json
@@ -30,62 +31,50 @@ class QuizApp:
         self.next_question()
 
     def setup_ui(self):
-        self.master.title("Quiz App")
+        self.master.title("Memorise-the-pairs Quiz!")
         self.set_window_size()
+        # self.master.iconbitmap("path_to_icon.ico")
         self.set_color_scheme()
 
-        self.instruction_label = tk.Label(self.master, text="Choose the correct option", font=("Arial", 12, "bold"), bg=self.background_color, fg=self.headline_color)
+        self.instruction_label = tk.Label(self.master, text="Choose the correct option", font=("Arial", 12, "bold"), bg=self.background_color, fg=self.button_bg_color)
         self.instruction_label.pack(pady=5)
 
-        self.remaining_label = tk.Label(self.master, text="", font=("Arial", 10), bg=self.background_color, fg=self.paragraph_color)
+        self.remaining_label = tk.Label(self.master, text="", font=("Arial", 12, "bold"), bg=self.background_color, fg=self.paragraph_color)
         self.remaining_label.pack()
 
-        self.question_label = tk.Label(self.master, text="", font=("Arial", 12), wraplength=380, justify='left', bg=self.background_color, fg=self.paragraph_color)
+        self.question_label = tk.Label(self.master, text="", font=("Arial", 18, "bold"), wraplength=380, justify='left', bg=self.background_color, fg=self.paragraph_color)
         self.question_label.pack(pady=5, padx=5)
 
         self.choice_buttons = []
         for i in range(4):
-            button = tk.Button(self.master, text="", width=30, height=1, command=lambda i=i: self.check_answer(i), bg=self.button_bg_color, fg=self.button_text_color)
-            button.pack(pady=3)
+            button = tk.Button(self.master, text="", font=("Calibri", 12, "bold"), width=50, height=2, command=lambda i=i: self.check_answer(i), bg=self.button_bg_color, fg=self.button_text_color)
+            button.pack(pady=10)
             self.choice_buttons.append(button)
 
-        self.next_question_button = tk.Button(self.master, text="Next Question", width=15, height=1, command=self.next_question, bg=self.button_bg_color, fg=self.button_text_color)
-        self.next_question_button.pack(side="left", padx=5)
+        self.restart_button = tk.Button(self.master, text="Restart Quiz", font=("Arial", 12), width=15, height=1, command=self.restart, bg=self.paragraph_color, fg=self.button_text_color)
+        self.restart_button.pack(pady=15)
 
-        self.restart_button = tk.Button(self.master, text="Restart Quiz", width=15, height=1, command=self.restart, bg=self.button_bg_color, fg=self.button_text_color)
-        self.restart_button.pack(side="left", padx=5)
+        self.add_question_button = tk.Button(self.master, text="Add New Question", font=("Arial", 12), width=15, height=1, command=self.add_new_question, bg=self.paragraph_color, fg=self.button_text_color)
+        self.add_question_button.pack(pady=15)
 
-        self.add_question_button = tk.Button(self.master, text="Add New Question", width=15, height=1, command=self.add_new_question, bg=self.button_bg_color, fg=self.button_text_color)
-        self.add_question_button.pack(side="left", padx=5)
-
-        self.scrollable_results_text = tk.Text(self.master, wrap="word", width=50, height=10, font=("Arial", 10), bd=0, highlightthickness=0,  bg=self.background_color, fg=self.paragraph_color)
+        self.scrollable_results_text = tk.Text(self.master, wrap="word", width=70, height=100, font=("Arial", 10), bd=0, highlightthickness=0,  bg=self.background_color, fg=self.paragraph_color)
         self.scrollable_results_text.tag_configure("center", justify='center')
 
-        self.scrollable_results_text.pack(side="left", pady=20, padx=5)
-
-        # scrollbar = tk.Scrollbar(self.master, command=self.scrollable_results_text.yview)
-        # scrollbar.pack(side="right", fill="y")
-        # self.scrollable_results_text.config(yscrollcommand=scrollbar.set)
-
-        window_width = self.master.winfo_reqwidth()
-        window_height = self.master.winfo_reqheight()
-        text_width = self.scrollable_results_text.winfo_reqwidth()
-        text_height = self.scrollable_results_text.winfo_reqheight()
-        x_position = (window_width - text_width) + 170
-        y_position = window_height - text_height + 280
-
-        self.scrollable_results_text.place(x=x_position, y=y_position)
-
-        self.next_question_button.place(x=x_position+260, y=y_position-40)
-        self.restart_button.place(x=x_position+125, y=y_position-40)
-        self.add_question_button.place(x=x_position-10, y=y_position-40)
+        self.scrollable_results_text.pack(pady=20, padx=5)
 
     def set_window_size(self):
-        self.master.geometry("400x500+300+300")
+        # self.master.geometry("400x500+300+300")
+        screen_width = self.master.winfo_screenwidth()
+        screen_height = self.master.winfo_screenheight()
+        window_width = int(screen_width * 0.8)
+        window_height = int(screen_height * 0.8)
+        x_position = (screen_width - window_width) // 2
+        y_position = (screen_height - window_height) // 2
+
+        self.master.geometry(f"{window_width}x{window_height}+{x_position}+{y_position}")
 
     def set_color_scheme(self):
         self.background_color = "#004643"
-        self.headline_color = "#fffffe"
         self.paragraph_color = "#abd1c6"
         self.button_bg_color = "#f9bc60"
         self.button_text_color = "#001e1d"
@@ -105,12 +94,11 @@ class QuizApp:
         variations = [correct_answer]
 
         for answer in existing_answers:
-            if len(answer) == len(correct_answer):
-                variations.append(answer)
-
-            common_part = difflib.SequenceMatcher(None, answer, correct_answer).find_longest_match(0, len(answer), 0, len(correct_answer)).size
-            if common_part > 2 and answer in existing_answers:
-                variations.append(answer)
+            if answer != correct_answer and answer not in variations:
+                # Avoid adding duplicate options
+                common_part = difflib.SequenceMatcher(None, answer, correct_answer).find_longest_match(0, len(answer), 0, len(correct_answer)).size
+                if common_part > 2:
+                    variations.append(answer)
 
         return variations
 
@@ -133,7 +121,10 @@ class QuizApp:
         self.question_label.config(text=f"{question_text}\n")
 
         for i, button in enumerate(self.choice_buttons):
-            button.config(text=str(choices[i]))
+            if i < len(choices):
+                button.config(text=str(choices[i]))
+            else:
+                button.config(text="")  # Set the text to an empty string for extra buttons
 
     def check_answer(self, choice_index):
         if self.current_question_index >= len(self.question_list):
@@ -144,11 +135,21 @@ class QuizApp:
 
         self.question_list[self.current_question_index].user_choice = chosen_answer
 
+        feedback = f"Question {self.current_question_index + 1}: "
         if chosen_answer == correct_answer:
+            feedback += "Correct!\n"
             self.score += 1
+        else:
+            feedback += f"Wrong! Correct answer: {correct_answer}\n"
+
+        current_content = self.scrollable_results_text.get(1.0, tk.END)
+        new_content = feedback + current_content
+        self.scrollable_results_text.delete(1.0, tk.END)
+        self.scrollable_results_text.insert(tk.END, new_content, "center")
 
         self.asked_questions.add(correct_answer)
         self.current_question_index += 1
+        self.remaining_questions -= 1
         self.next_question()
 
     def next_question(self):
@@ -167,7 +168,10 @@ class QuizApp:
             result_message += f"  - Correct Answer: {question.correct_answer}\n"
             result_message += f"  - Your Choice: {question.user_choice}\n"
 
-        self.scrollable_results_text.insert(tk.END, result_message, "center")
+        current_content = self.scrollable_results_text.get(1.0, tk.END)
+        new_content = result_message + current_content
+        self.scrollable_results_text.delete(1.0, tk.END)
+        self.scrollable_results_text.insert(tk.END, new_content, "center")
 
     def add_new_question(self):
         new_question_window = tk.Toplevel(self.master)
@@ -208,6 +212,8 @@ def main():
     root = tk.Tk()
     app = QuizApp(root)
     root.configure(bg=app.background_color)
+    # root.attributes('-fullscreen', True)  # Start in fullscreen mode
+    # root.bind('<Escape>', lambda event: root.attributes('-fullscreen', False))  # Press Escape to exit fullscreen
     root.mainloop()
 
 if __name__ == "__main__":
