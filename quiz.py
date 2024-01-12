@@ -50,7 +50,9 @@ class QuizApp:
         self.add_question_button = tk.Button(self.master, text="Add New Question", width=15, height=1, command=self.add_new_question, bg=self.button_bg_color, fg=self.button_text_color)
         self.add_question_button.pack(pady=5)
 
-        self.scrollable_results_text = tk.Text(self.master, wrap="word", width=50, height=10, font=("Arial", 10), bg=self.background_color, fg=self.paragraph_color)
+        self.scrollable_results_text = tk.Text(self.master, wrap="word", width=50, height=10, font=("Arial", 10), bd=0, highlightthickness=0,  bg=self.background_color, fg=self.paragraph_color)
+        self.scrollable_results_text.tag_configure("center", justify='center')
+
         self.scrollable_results_text.pack(pady=10, padx=5)
 
         scrollbar = tk.Scrollbar(self.master, command=self.scrollable_results_text.yview)
@@ -144,7 +146,7 @@ class QuizApp:
             result_message += f"  - Correct Answer: {question.correct_answer}\n"
             result_message += f"  - Your Choice: {question.user_choice}\n"
 
-        self.scrollable_results_text.insert(tk.END, result_message)
+        self.scrollable_results_text.insert(tk.END, result_message, "center")
 
     def add_new_question(self):
         new_question_window = tk.Toplevel(self.master)
